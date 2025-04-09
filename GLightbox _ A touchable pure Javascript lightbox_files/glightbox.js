@@ -576,7 +576,7 @@
           return false;
         }
         if (!_this.zoomedIn) {
-          return _this.zoomIn();
+          return _this.zoomIn(e);  // Pass event to zoomIn function
         }
         if (_this.zoomedIn && !_this.dragging) {
           _this.zoomOut();
@@ -584,24 +584,47 @@
       }, false);
       this.img.setZoomEvents = true;
     }
+    
     return _createClass(ZoomImages, [{
       key: "zoomIn",
-      value: function zoomIn() {
+      value: function zoomIn(e) {
         var winWidth = this.widowWidth();
         if (this.zoomedIn || winWidth <= 768) {
           return;
         }
+      
         var img = this.img;
+        var rect = img.getBoundingClientRect();  // Get the image's bounding box
+      
+        // Log image coordinates
+        console.log('Image coordinates:', rect);
+      
+        var clickX = e.clientX - rect.left;  // X position of the click relative to the image
+        var clickY = e.clientY - rect.top;   // Y position of the click relative to the image
+      
+        // Log mouse click coordinates
+        console.log('Mouse click coordinates relative to image:', { clickX, clickY });
+      
         img.setAttribute('data-style', img.getAttribute('style'));
         img.style.maxWidth = img.naturalWidth + 'px';
         img.style.maxHeight = img.naturalHeight + 'px';
+      
+        // Calculate the center offset for zoom positioning
         if (img.naturalWidth > winWidth) {
           var centerX = winWidth / 2 - img.naturalWidth / 2;
-          this.setTranslate(this.img.parentNode, centerX, 0);
+          var centerY = window.innerHeight / 2 - img.naturalHeight / 2;
+      
+          // Adjust the zoom center position based on the click point
+          var offsetX = (clickX / img.naturalWidth) * img.naturalWidth - (winWidth / 2);
+          var offsetY = (clickY / img.naturalHeight) * img.naturalHeight - (window.innerHeight / 2);
+      
+          this.setTranslate(this.img.parentNode, centerX - offsetX, centerY - offsetY);
         }
+      
         this.slide.classList.add('zoomed');
         this.zoomedIn = true;
       }
+      
     }, {
       key: "zoomOut",
       value: function zoomOut() {
@@ -694,6 +717,7 @@
       }
     }]);
   }();
+  
 
   var DragSlides = function () {
     function DragSlides() {
