@@ -611,14 +611,36 @@
       
         // Calculate the center offset for zoom positioning
         if (img.naturalWidth > winWidth) {
-          var centerX = winWidth / 2 - img.naturalWidth / 2;
-          var centerY = window.innerHeight / 2 - img.naturalHeight / 2;
+          // var centerX = winWidth / 2 - img.naturalWidth / 2;
+          // var centerY = window.innerHeight / 2 - img.naturalHeight / 2;
+
+          var centerX = rect.width/2;
+          var centerY = rect.height/2;
+
+          console.log('Center coordinates:', { centerX, centerY });
+
+          console.log('Image natural size:', { width: img.naturalWidth, height: img.naturalHeight });
+
+          var zoomRatio = img.naturalWidth / rect.width;
+
+          console.log('Zoom ratio:', zoomRatio);
+          
       
           // Adjust the zoom center position based on the click point
-          var offsetX = (clickX / img.naturalWidth) * img.naturalWidth - (winWidth / 2);
-          var offsetY = (clickY / img.naturalHeight) * img.naturalHeight - (window.innerHeight / 2);
-      
-          this.setTranslate(this.img.parentNode, centerX - offsetX, centerY - offsetY);
+          // var offsetX = (clickX / img.naturalWidth) * img.naturalWidth - (winWidth / 2);
+          // var offsetY = (clickY / img.naturalHeight) * img.naturalHeight - (window.innerHeight / 2);
+          // var offsetX=0;
+          // var offsetY=0;
+
+          // clickX and Y are relative to top left corner of the image
+
+          var offsetX = (zoomRatio-1)*(clickX-centerX)*-1;
+          var offsetY = (zoomRatio-1)*(clickY-centerY)*-1;
+
+          console.log('Offset coordinates:', { offsetX, offsetY });
+          
+          this.setTranslate(this.img.parentNode,offsetX,offsetY);
+          // this.setTranslate(this.img.parentNode, centerX - offsetX, centerY - offsetY);
         }
       
         this.slide.classList.add('zoomed');
